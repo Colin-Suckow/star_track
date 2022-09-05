@@ -17,7 +17,4 @@ int main()
     StarCatalogManager catalog_manager(infile);
     infile.close();
     std::cout << "done!" << std::endl;
-
-
-    
 }
