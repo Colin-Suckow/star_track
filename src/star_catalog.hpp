@@ -3,6 +3,7 @@
 
 #include <vector>
 #include <fstream>
+#include <tuple>
 
 class StarCatalogEntry
 {
@@ -26,6 +27,21 @@ public:
     StarCatalog(std::ifstream& infile);
 
     constexpr std::vector<StarCatalogEntry>& get_entries() {return entries;}
+};
+
+struct CatalogPair
+{
+    int s1, s2;
+    double dist;
+};
+
+class StarCatalogManager
+{
+    StarCatalog catalog;
+    std::vector<CatalogPair> edges;
+public:
+    StarCatalogManager(std::ifstream& infile);
+
 };
 
 #endif /* STAR_CATALOG_H */
