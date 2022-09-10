@@ -18,7 +18,7 @@ public:
     constexpr float magnitude() {return mag100 / 100.;}
     constexpr double right_ascension() {return ra;}
     constexpr double declination() {return dec;}
-    
+
     // This constructor is just here for unit testing
     StarCatalogEntry(double ra, double dec) :
         cat_num(1.), ra(ra), dec(dec), spectral_type{0, 0},
@@ -50,6 +50,7 @@ public:
     StarCatalogManager(std::ifstream& infile);
     StarCatalogManager(StarCatalog catalog);
     std::set<int> get_possible_stars(double dist);
+    constexpr std::vector<StarCatalogEntry>& get_entries() {return catalog.get_entries();}
 private:
     void calculate_edges();
 };
