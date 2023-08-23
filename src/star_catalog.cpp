@@ -18,7 +18,10 @@ double angular_distance(double s1_ra, double s1_dec, double s2_ra,double s2_dec)
 StarCatalog::StarCatalog(std::ifstream& infile)
 {
     // seek past header
-    infile.seekg(28, infile.beg);
+    CatalogHeader header;
+    infile.read((char *) &header, 28);
+
+
 
     // read star entries
     while(!infile.eof())
@@ -66,7 +69,7 @@ void StarCatalogManager::calculate_edges()
 }
 
 // Returns a set of all possible stars indicies given an angular distance between the target star and another star.
-std::set<int>  StarCatalogManager::get_possible_stars(double dist)
+std::set<int> StarCatalogManager::get_possible_stars(double dist)
 {
 
     std::set<int> result;

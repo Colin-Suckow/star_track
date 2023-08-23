@@ -5,6 +5,18 @@
 #include <fstream>
 #include <tuple>
 #include <set>
+#include <cstdint>
+
+struct CatalogHeader
+{
+    int32_t star0;
+    int32_t star1;
+    int32_t starn;
+    int32_t stnum;
+    int32_t mprop;
+    int32_t nmag;
+    int32_t nbent;
+};
 
 class StarCatalogEntry
 {

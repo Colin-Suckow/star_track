@@ -2,9 +2,12 @@
 #include <iomanip>
 #include <set>
 #include <unordered_map>
+#include <algorithm>
+
 
 #include "star_catalog.hpp"
 #include "candidate_source.hpp"
+#include "fmt/core.h"
 
 using namespace std;
 
@@ -23,6 +26,11 @@ int main()
     infile.close();
     std::cout << "done!" << std::endl;
 
+    for (auto& star : catalog_manager.get_entries())
+    {
+        fmt::println("DEC: {}", star.declination());
+    }
+
     auto a7c = Camera(60., 35.6, 23.8, 6000, 4000);
     auto source_path = "../photos/60mm_test1.JPG";
     std::cout << "Loading source image '" << source_path << "'... " << std::flush;
@@ -32,7 +40,7 @@ int main()
     auto total_pairs = pow(star_source.size(), 2);
     auto count = 0;
 
-    std::vector<std::set<int>> possible_matches;
+    std::vector<std::unordered_map<int,int>> possible_matches;
     possible_matches.resize(star_source.size());
 
     int s1i = 0;
@@ -48,18 +56,12 @@ int main()
 
             auto dist = star_source.angular_distance_between(s1, s2);
             auto matches = catalog_manager.get_possible_stars(dist);
-            if (possible_matches[s1i].empty())
+
+            for (const auto match_index : matches)
             {
-                // Since the set is empty, just fill it with this one
-                possible_matches[s1i] = matches;
+                possible_matches[s1i][match_index]++;
             }
-            else
-            {
-                // Otherwise use the intersection of the two sets to narrow down the matches
-                std::set<int> intersection;
-                std::set_intersection(possible_matches[s1i].begin(), possible_matches[s1i].end(), matches.begin(), matches.end(), std::inserter(intersection, intersection.begin()));
-                possible_matches[s1i] = intersection;
-            }
+  
             count++;
         }
         s1i++;
@@ -67,16 +69,18 @@ int main()
 
     std::cout << std::endl;
 
+    // Sort our matches by number of matches, then magnitude to break any ties
+
+
     // print match counts
     auto positive_matches = 0;
     for (auto& matches : possible_matches)
     {
-        if (matches.size() == 1)
-        {
-            positive_matches++;
-            std::cout << setprecision(2);
-            std::cout << "ID: " << catalog_manager.get_entries()[*matches.begin()].catalog_id() << " MAG: " << catalog_manager.get_entries()[*matches.begin()].magnitude() << std::endl;
-        }
+        // Sort the matches
+        auto best_match_index = std::max_element(std::begin(matches), std::end(matches), [](const std::pair<int, int> &p1, const std::pair<int, int> &p2)
+                         { return p1.second < p2.second; });
+        auto best_star = catalog_manager.get_entries()[best_match_index->first];
+        // Print the star
+        fmt::println("ID: {}, DEC: {}, RA: {}, MATCHES: {}", best_star.catalog_id(), best_star.declination(), best_star.right_ascension(), best_match_index->second);
     }
-    std::cout << "Matched " << positive_matches << " out of " << star_source.size() << " candidates identified from image." << std::endl;
 }

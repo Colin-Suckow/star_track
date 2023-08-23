@@ -14,9 +14,10 @@ set(CMAKE_CXX_FLAGS_RELEASE "-O3")
 
 
 add_library(star_track_lib ${LIB_SOURCES})
+add_subdirectory(lib/fmt)
 
 add_executable(star_track src/main.cpp)
-target_link_libraries(star_track star_track_lib ${OpenCV_LIBS})
+target_link_libraries(star_track star_track_lib ${OpenCV_LIBS} fmt::fmt)
 
 add_subdirectory(lib/Catch2)
 add_executable(tests tests/main.cpp)
